@@ -63,6 +63,18 @@
                 let co = document.getElementById("modal-outer");
                 co.hide();
             }
+            function changeBody() {
+                let first_el = document.getElementById('first_el');
+                let last_el = document.getElementById('last_el');
+
+                if (last_el.style.display == 'none') {
+                    first_el.style.display = 'none';
+                    last_el.style.display = 'block';
+                } else {
+                    first_el.style.display = 'block';
+                    last_el.style.display = 'none';
+                }
+            }
         </script>
 
         <button onclick="buttonClicked()">open L1</button>
@@ -76,8 +88,12 @@
                     <div style="height:20px;border-top:3px solid #000;
                                 margin:auto;width:30px" class="top-guide"> 
                     </div>
-                    <div style="background:red">
+                    <div>
                         <button onclick="closeOuter()">close outer</button>
+                        <button onclick="changeBody()">change body height</button>
+                    </div>
+                    <div style="background:red" id="first_el">
+
                         <h1 style="color:white">outer</h1>
                         <div style="height:300px;width:200px;background:grey">
                         </div>
@@ -88,6 +104,9 @@
                         <div style="height:20px;border-bottom:3px solid #000;
                                     margin:auto;width:30px" id="left-guide">
                         </div>
+                    </div>
+                    <div style="background-color: blue;display: none;" id="last_el">
+                        <h1>height is changed</h1>
                     </div>
                 </div>
             </aalam-modal>

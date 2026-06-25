@@ -113,6 +113,7 @@ export class AalamModal extends LitElement {
     private _clamp_values:{[key:string]:number|null} = {};
     private _body_overflow:string|null;
     private _mutation_obs:MutationObserver;
+    private _resize_obs:ResizeObserver;
 
     constructor() {
         super();
@@ -121,6 +122,10 @@ export class AalamModal extends LitElement {
                 this.hide();
             }
         })
+        this._resize_obs = new ResizeObserver(() => {
+            if (this._mouse_move_listener) return;
+            this._setWrapperBoundsNull();
+        });
     }
     override attributeChangedCallback(
         name:string, old_val:string, new_val:string) {
@@ -184,6 +189,7 @@ export class AalamModal extends LitElement {
         this._clearTimer();
         window.removeEventListener("resize", this._resize_listener);
         document.removeEventListener("keydown", this._key_listener);
+        this._resize_obs.disconnect();
     }
     override render() {
         let cont_styles:{[key:string]:string} = {
@@ -206,7 +212,7 @@ ${this._animateStyles()}
         @touchstart=${this.guidesel?this._touchStart:null}
         @mousedown=${this.guidesel?this._touchStart:null}
         @click=${this._wrapperClickedEvent}>
-        <slot name="modal-dialog" id="slot-body" class="modal-body">
+        <slot name="modal-dialog" id="slot-body" class="modal-body" @slotchange=${this._slotChangedEvent}>
         </slot>
     </div>
 </div>`
@@ -217,6 +223,14 @@ ${this._animateStyles()}
 .__modal-wrapper {z-index:1}
 .__modal-container {position:fixed;top:0;bottom:0;right:0;left:0;}
 .mousedown {user-select: none;}`
+    }
+    private _slotChangedEvent(e: Event) {
+        this._resize_obs.disconnect();
+        const slot_el = e.target as HTMLSlotElement;
+        if (slot_el) {
+            const assignedNodes = slot_el.assignedElements({ flatten: true });
+            assignedNodes.forEach(node => this._resize_obs.observe(node));
+        }
     }
     override firstUpdated() {
         this._cur_pos = this._checkPos();
